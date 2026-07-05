@@ -292,8 +292,9 @@ export class ResultScene extends Phaser.Scene {
 
     const titleBtn = this.add.text(GAME_WIDTH / 2, 788, STR.backToTitle, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '15px',
       color: '#636e72',
+      padding: { x: 16, y: 10 },
     }).setOrigin(0.5).setAlpha(0).setInteractive({ useHandCursor: true });
 
     titleBtn.on('pointerdown', () => {
@@ -313,7 +314,7 @@ export class ResultScene extends Phaser.Scene {
   ): void {
     const btn = this.add.container(x, y);
     const w = primary ? 260 : 270;
-    const h = primary ? 56 : 44;
+    const h = primary ? 56 : 48;
 
     const bg = this.add.graphics();
     bg.fillStyle(color, 1);

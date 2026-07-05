@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import {
   COLORS,
   BASE_FALL_SPEED,
+  DRAG_ZONE_TOP,
   FALL_SPEED_INCREMENT,
   LAYER_SPEED_INCREMENT,
   MAX_FALL_SPEED,
@@ -33,6 +34,7 @@ import {
   playKetchupSquirt,
   removeFallingShadow,
   showComboPopup,
+  showNeatStackPopup,
   updateFallingShadow,
   type StackItem,
 } from '../game/Ingredient';
@@ -148,11 +150,11 @@ export class GameScene extends Phaser.Scene {
 
     const continueBtn = this.add.text(0, 72, STR.tapToContinue, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '16px',
+      fontSize: '18px',
       fontStyle: 'bold',
       color: '#FFD966',
       backgroundColor: 'rgba(255,255,255,0.12)',
-      padding: { x: 12, y: 6 },
+      padding: { x: 20, y: 12 },
     }).setOrigin(0.5).setDepth(302).setInteractive({ useHandCursor: true });
 
     const dismiss = () => {
@@ -236,10 +238,10 @@ export class GameScene extends Phaser.Scene {
 
   private setupInput(): void {
     const canDrag = (pointer: Phaser.Input.Pointer): boolean =>
-      pointer.y >= 130 && pointer.y < GAME_HEIGHT - 20;
+      pointer.y >= DRAG_ZONE_TOP && pointer.y < GAME_HEIGHT - 12;
 
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.y < 120 || this.phase === 'complete' || this.phase === 'collapsing') return;
+      if (this.phase === 'complete' || this.phase === 'collapsing') return;
       if (canDrag(pointer)) {
         this.isDragging = true;
         this.dragPointerId = pointer.id;
@@ -332,13 +334,16 @@ export class GameScene extends Phaser.Scene {
   private showDropLabel(type: IngredientType): void {
     this.dropLabel?.destroy();
     const def = INGREDIENT_DEFS[type];
-    this.dropLabel = this.add.text(GAME_WIDTH / 2, 118, def.labelJa, {
+    const isBun = def.isBun;
+    this.dropLabel = this.add.text(GAME_WIDTH / 2, 118, isBun ? STR.neatStack : def.labelJa, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '20px',
+      fontSize: isBun ? '16px' : '20px',
       fontStyle: 'bold',
-      color: def.isBun ? '#E8A838' : '#FF6B35',
+      color: isBun ? '#E8A838' : '#FF6B35',
       stroke: '#FFFFFF',
       strokeThickness: 3,
+      align: 'center',
+      wordWrap: { width: GAME_WIDTH - 48 },
     }).setOrigin(0.5).setDepth(150).setScrollFactor(0);
     this.tweens.add({
       targets: this.dropLabel,
@@ -418,6 +423,10 @@ export class GameScene extends Phaser.Scene {
     playLandImpact(this, this.falling, type, () => {
       this.cameras.main.shake(80, type === 'patty' ? 0.006 : 0.003);
     });
+
+    if (def.isBun) {
+      showNeatStackPopup(this, landX, landY);
+    }
 
     if (comboLabel) {
       showComboPopup(this, landX, landY, comboLabel);

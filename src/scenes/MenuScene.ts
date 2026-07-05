@@ -71,7 +71,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private createStartZone(hasTitleArt: boolean): void {
-    const zone = this.add.zone(GAME_WIDTH / 2, 728, GAME_WIDTH, 140);
+    const zone = this.add.zone(GAME_WIDTH / 2, 728, GAME_WIDTH, 160);
     zone.setDepth(10);
     zone.setInteractive({ useHandCursor: true });
     zone.on('pointerdown', () => this.startGame());
