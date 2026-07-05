@@ -4,6 +4,7 @@ import { COMBO_COLORS, INGREDIENT_DEFS } from './GameConfig';
 import { getComboDisplay } from '../i18n/strings';
 import { SoundManager } from '../audio/SoundManager';
 import { ensureIngredientTextures, getPartTextureKey } from './art/IngredientArt';
+import { getMiniStackStep } from './StackLayout';
 
 export interface StackItem {
   type: IngredientType;
@@ -411,11 +412,10 @@ export function drawMiniBurger(
 
   let offsetY = 0;
   for (const type of types) {
-    const def = INGREDIENT_DEFS[type];
     const img = scene.add.image(0, offsetY, getPartTextureKey(type));
-    img.setDisplaySize(def.width, def.height);
+    img.setDisplaySize(INGREDIENT_DEFS[type].width, INGREDIENT_DEFS[type].height);
     group.add(img);
-    offsetY -= def.height * 0.55;
+    offsetY -= getMiniStackStep(type) * 0.92;
   }
 
   return group;

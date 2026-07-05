@@ -1,6 +1,7 @@
 import type { StackItem } from './Ingredient';
 import { getBurgerCenterX, getBurgerWidth } from './Ingredient';
 import { INGREDIENT_DEFS } from './GameConfig';
+import { getStackSurfaceY } from './StackLayout';
 import { clamp } from '../utils/math';
 
 export interface StackAppearance {
@@ -24,7 +25,7 @@ export function getSupportItem(stack: StackItem[]): StackItem | null {
   let topIdx = 0;
   let minY = Infinity;
   for (let i = 0; i < stack.length; i++) {
-    const top = stack[i]!.y - stack[i]!.height / 2;
+    const top = getStackSurfaceY(stack[i]!);
     if (top < minY) {
       minY = top;
       topIdx = i;

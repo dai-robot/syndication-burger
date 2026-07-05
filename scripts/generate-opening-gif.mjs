@@ -13,6 +13,7 @@ const W = 195;
 const H = 422;
 const FRAME_DELAY = 90;
 const FRAME_COUNT = 48;
+const TRAY_TOP_Y = 354;
 
 const C = {
   bg: [255, 248, 232],
@@ -159,7 +160,8 @@ function drawBackground(f, frame) {
   }
 
   f.roundRect(14, 52, W - 28, H - 110, 12, C.card, 0.35);
-  f.strokeEllipse(W / 2, H - 58, 62, 10, C.outline, 1, 0.35);
+  f.fillEllipse(W / 2, TRAY_TOP_Y + 4, 58, 5, 'rgba(93, 58, 26, 0.15)');
+  f.strokeEllipse(W / 2, TRAY_TOP_Y + 2, 56, 4, C.outline, 1, 0.25);
 }
 
 function drawTitle(f, frame) {
@@ -220,58 +222,84 @@ function drawChar(f, ch, x, y, w, h, opacity) {
   }
 }
 
-function drawBottomBun(f, cx, baseY, drop) {
-  const y = baseY + (1 - drop) * -80;
-  f.fillEllipse(cx, y + 12, 46, 18, C.bunDark);
-  f.fillEllipse(cx, y + 6, 44, 15, C.bunMid);
-  f.fillEllipse(cx, y + 1, 42, 12, C.bunLight);
-  f.fillEllipse(cx, y - 8, 34, 7, C.bunCream);
-  f.strokeEllipse(cx, y + 4, 43, 13, C.outline, 1, 0.45);
+function drawBottomBun(f, cx, cy) {
+  f.fillEllipse(cx, cy + 6, 46, 15, C.bunDark);
+  f.fillEllipse(cx - 21, cy + 2, 4, 12, '#a86220');
+  f.fillEllipse(cx + 21, cy + 2, 4, 12, '#a86220');
+  f.fillEllipse(cx, cy + 3, 44, 13, C.bunMid);
+  f.fillEllipse(cx, cy, 42, 11, C.bunLight);
+  f.fillEllipse(cx, cy - 5, 28, 5, C.bunCream);
+  f.strokeEllipse(cx, cy + 2, 43, 12, C.outline, 1, 0.45);
 }
 
-function drawPatty(f, cx, baseY, drop) {
-  const y = baseY + (1 - drop) * -90;
-  f.fillEllipse(cx, y + 5, 40, 10, C.patty);
-  f.fillEllipse(cx - 6, y + 1, 10, 4, C.pattyHi, 0.7);
-  f.strokeEllipse(cx, y + 3, 38, 8, C.outline, 1, 0.4);
+function drawPatty(f, cx, cy) {
+  f.fillEllipse(cx, cy + 3, 40, 9, C.patty);
+  f.fillEllipse(cx - 5, cy, 8, 3, C.pattyHi, 0.75);
+  f.strokeEllipse(cx, cy + 2, 37, 7, C.outline, 1, 0.35);
 }
 
-function drawCheese(f, cx, baseY, drop) {
-  const y = baseY + (1 - drop) * -85;
-  f.roundRect(cx - 38, y - 4, 76, 9, 2, C.cheeseDrip);
-  f.roundRect(cx - 36, y - 5, 72, 7, 2, C.cheese);
-  for (const d of [-24, 0, 22]) {
-    f.fillRect(cx + d - 2, y + 2, 4, 5, C.cheeseDrip);
+function drawCheese(f, cx, cy) {
+  f.roundRect(cx - 36, cy - 3, 72, 6, 2, C.cheeseDrip);
+  f.roundRect(cx - 34, cy - 4, 68, 5, 2, C.cheese);
+  for (const d of [-22, 0, 20]) {
+    f.fillRect(cx + d - 2, cy + 1, 3, 3, C.cheeseDrip);
   }
 }
 
-function drawLettuce(f, cx, baseY, drop) {
-  const y = baseY + (1 - drop) * -88;
+function drawLettuce(f, cx, cy) {
   for (let i = 0; i < 6; i++) {
     const t = i / 5;
-    const lx = cx - 34 + t * 68;
+    const lx = cx - 32 + t * 64;
     const c = i % 2 === 0 ? C.lettuceHi : C.lettuce;
-    f.fillEllipse(lx, y, 16, 9, c);
+    f.fillEllipse(lx, cy, 14, 7, c);
   }
 }
 
-function drawTomato(f, cx, baseY, drop) {
-  const y = baseY + (1 - drop) * -86;
-  f.fillEllipse(cx, y, 28, 7, C.tomato);
-  f.fillEllipse(cx, y + 1, 18, 4, C.tomatoInner, 0.75);
+function drawTomato(f, cx, cy) {
+  f.fillEllipse(cx, cy, 26, 6, C.tomato);
+  f.fillEllipse(cx, cy + 1, 16, 3, C.tomatoInner, 0.8);
 }
 
-function drawTopBun(f, cx, baseY, drop) {
-  const y = baseY + (1 - drop) * -95;
-  f.fillEllipse(cx, y + 14, 44, 12, C.bunDark);
-  f.fillEllipse(cx, y + 4, 46, 18, C.bunMid);
-  f.fillEllipse(cx, y - 4, 42, 16, C.bunLight);
-  f.fillEllipse(cx, y - 14, 34, 12, C.bunLight);
-  for (const [sx, sy] of [[-12, -8], [0, -14], [12, -10], [-6, -4], [8, -6]]) {
-    f.fillEllipse(cx + sx, y + sy, 2, 1.5, C.sesame);
+function drawTopBun(f, cx, cy) {
+  f.fillEllipse(cx, cy + 7, 42, 6, C.bunDark);
+  f.fillEllipse(cx, cy + 2, 44, 10, C.bunMid);
+  f.fillEllipse(cx, cy - 4, 40, 9, C.bunLight);
+  f.fillEllipse(cx, cy - 10, 30, 7, C.bunLight);
+  for (const [sx, sy] of [[-10, -6], [0, -10], [10, -7], [-5, -3], [7, -4]]) {
+    f.fillEllipse(cx + sx, cy + sy, 2, 1.2, C.sesame);
   }
-  f.strokeEllipse(cx, y + 2, 44, 14, C.outline, 1, 0.45);
+  f.strokeEllipse(cx, cy + 1, 42, 9, C.outline, 1, 0.4);
 }
+
+/** ゲーム StackLayout と同じ考え方（GIF は 0.5 倍スケール） */
+const LAYERS = [
+  { id: 'bottom_bun', stackTop: 9, stackBottom: 15, stackGap: 0, start: 8, draw: drawBottomBun },
+  { id: 'patty', stackTop: 6.5, stackBottom: 7, stackGap: -1.5, start: 14, draw: drawPatty },
+  { id: 'cheese', stackTop: 3.5, stackBottom: 4, stackGap: -2, start: 19, draw: drawCheese },
+  { id: 'lettuce', stackTop: 5, stackBottom: 5.5, stackGap: -1, start: 24, draw: drawLettuce },
+  { id: 'tomato', stackTop: 4.5, stackBottom: 5, stackGap: -1, start: 29, draw: drawTomato },
+  { id: 'top_bun', stackTop: 25, stackBottom: 17, stackGap: -2, start: 34, draw: drawTopBun },
+];
+
+function buildStackLayout() {
+  const placed = [];
+  const centers = {};
+  for (const layer of LAYERS) {
+    let y;
+    if (placed.length === 0) {
+      y = TRAY_TOP_Y - layer.stackBottom;
+    } else {
+      const support = placed[placed.length - 1];
+      const surfaceY = support.y - support.stackTop;
+      y = surfaceY - layer.stackBottom + layer.stackGap;
+    }
+    placed.push({ ...layer, y });
+    centers[layer.id] = y;
+  }
+  return { placed, centers, peakY: placed[placed.length - 1].y - placed[placed.length - 1].stackTop };
+}
+
+const STACK = buildStackLayout();
 
 function layerDrop(frame, start) {
   return easeOutBack(clamp((frame - start) / 8, 0, 1));
@@ -279,37 +307,32 @@ function layerDrop(frame, start) {
 
 function drawBurger(f, frame) {
   const cx = W / 2;
-  const baseY = 250;
-  const layers = [
-    { start: 8, draw: drawBottomBun },
-    { start: 14, draw: drawPatty },
-    { start: 19, draw: drawCheese },
-    { start: 24, draw: drawLettuce },
-    { start: 29, draw: drawTomato },
-    { start: 34, draw: drawTopBun },
-  ];
 
-  for (const layer of layers) {
+  for (const layer of STACK.placed) {
     if (frame < layer.start) continue;
-    layer.draw(f, cx, baseY, layerDrop(frame, layer.start));
+    const drop = layerDrop(frame, layer.start);
+    const landY = layer.y;
+    const cy = landY + (1 - drop) * -75;
+    layer.draw(f, cx, cy);
   }
 
   if (frame >= 38) {
     const steamT = frame - 38;
+    const peak = STACK.peakY;
     for (let i = 0; i < 4; i++) {
-      const sx = cx + (i - 1.5) * 16;
-      const sy = baseY - 72 - steamT * 3 - i * 4;
+      const sx = cx + (i - 1.5) * 14;
+      const sy = peak - 8 - steamT * 3 - i * 3;
       const opacity = clamp(1 - steamT * 0.12 - i * 0.15, 0, 1);
-      if (opacity > 0) f.fillEllipse(sx, sy, 4 + i, 3, C.steam, opacity * 0.85);
+      if (opacity > 0) f.fillEllipse(sx, sy, 3 + i, 2.5, C.steam, opacity * 0.85);
     }
   }
 
   if (frame >= 36) {
     for (let i = 0; i < 6; i++) {
       const a = (frame * 0.7 + i * 1.3) % (Math.PI * 2);
-      const dist = 52 + Math.sin(frame * 0.2 + i) * 4;
+      const dist = 48 + Math.sin(frame * 0.2 + i) * 4;
       const px = cx + Math.cos(a) * dist;
-      const py = baseY - 40 + Math.sin(a) * dist * 0.35;
+      const py = STACK.peakY + 20 + Math.sin(a) * dist * 0.3;
       f.fillEllipse(px, py, 2, 2, C.accent, 0.9);
     }
   }

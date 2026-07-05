@@ -45,6 +45,7 @@ import {
   isNeatStack,
 } from '../game/StackPhysics';
 import { ScoringSystem } from '../game/Scoring';
+import { computeLandCenterY, getStackPeakY, shouldLandAt } from '../game/StackLayout';
 import { SoundManager } from '../audio/SoundManager';
 import { Hud } from '../ui/Hud';
 import { clamp } from '../utils/math';
@@ -343,13 +344,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private getStackTopY(): number {
-    if (this.stack.length === 0) return TRAY_Y - TRAY_HEIGHT;
-    let highestTop = Infinity;
-    for (const item of this.stack) {
-      const top = item.y - item.height / 2;
-      if (top < highestTop) highestTop = top;
-    }
-    return highestTop;
+    return getStackPeakY(this.stack);
   }
 
   private isStackFull(): boolean {
@@ -357,11 +352,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private getLandingY(type: IngredientType): number {
-    const def = INGREDIENT_DEFS[type];
-    if (this.stack.length === 0) {
-      return TRAY_Y - TRAY_HEIGHT / 2 - def.height / 2;
-    }
-    return this.getStackTopY() - def.height / 2 + 2;
+    return computeLandCenterY(type, this.stack);
   }
 
   private landIngredient(): void {
@@ -601,8 +592,7 @@ export class GameScene extends Phaser.Scene {
     const speed = this.fallSpeed * (1 / Math.max(def.weight, 0.5));
     this.falling.y += speed * dt;
 
-    const landY = this.getLandingY(this.fallingType);
-    if (this.falling.y + def.height / 2 >= landY) {
+    if (shouldLandAt(this.fallingType, this.falling.y, this.stack)) {
       this.landIngredient();
       return;
     }

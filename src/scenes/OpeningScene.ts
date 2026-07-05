@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { markOpeningSeen } from '../utils/GameSettings';
 import { STR } from '../i18n/strings';
 
-const OPENING_GIF = `${import.meta.env.BASE_URL}syndication_burger_opening.gif?v=4`;
+const OPENING_GIF = `${import.meta.env.BASE_URL}syndication_burger_opening.gif?v=5`;
 const OPENING_MS = 48 * 90 + 400;
 
 export class OpeningScene extends Phaser.Scene {

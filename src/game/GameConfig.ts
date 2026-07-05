@@ -35,6 +35,12 @@ export interface IngredientDef {
   labelJa: string;
   width: number;
   height: number;
+  /** 中心から上面（積み上げ面）まで */
+  stackTop: number;
+  /** 中心から下面まで */
+  stackBottom: number;
+  /** 支持面へのめり込み（負で密着） */
+  stackGap?: number;
   weight: number;
   friction: number;
   wobble: number;
@@ -52,6 +58,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: '下バンズ',
     width: 200,
     height: 72,
+    stackTop: 18,
+    stackBottom: 30,
+    stackGap: 0,
     weight: 1.2,
     friction: 0.9,
     wobble: 0.08,
@@ -67,6 +76,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: 'パティ',
     width: 172,
     height: 32,
+    stackTop: 13,
+    stackBottom: 14,
+    stackGap: -3,
     weight: 2.0,
     friction: 0.85,
     wobble: 0.04,
@@ -82,6 +94,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: 'チーズ',
     width: 178,
     height: 18,
+    stackTop: 7,
+    stackBottom: 8,
+    stackGap: -4,
     weight: 0.6,
     friction: 0.7,
     wobble: 0.12,
@@ -97,6 +112,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: 'レタス',
     width: 188,
     height: 26,
+    stackTop: 10,
+    stackBottom: 11,
+    stackGap: -2,
     weight: 0.4,
     friction: 0.6,
     wobble: 0.18,
@@ -112,6 +130,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: 'トマト',
     width: 132,
     height: 22,
+    stackTop: 9,
+    stackBottom: 10,
+    stackGap: -2,
     weight: 0.8,
     friction: 0.4,
     wobble: 0.1,
@@ -127,6 +148,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: 'ピクルス',
     width: 92,
     height: 18,
+    stackTop: 7,
+    stackBottom: 8,
+    stackGap: -2,
     weight: 0.3,
     friction: 0.5,
     wobble: 0.06,
@@ -142,6 +166,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: 'ケチャップ',
     width: 160,
     height: 20,
+    stackTop: 8,
+    stackBottom: 9,
+    stackGap: -3,
     weight: 0,
     friction: 0,
     wobble: 0,
@@ -157,6 +184,9 @@ export const INGREDIENT_DEFS: Record<IngredientType, IngredientDef> = {
     labelJa: '上バンズ',
     width: 210,
     height: 104,
+    stackTop: 50,
+    stackBottom: 34,
+    stackGap: -4,
     weight: 1.0,
     friction: 0.8,
     wobble: 0.06,
