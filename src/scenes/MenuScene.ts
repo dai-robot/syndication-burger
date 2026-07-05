@@ -20,7 +20,9 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
-    if (this.titleBgReady && this.textures.exists(TITLE_BG_KEY)) {
+    const hasTitleArt = this.titleBgReady && this.textures.exists(TITLE_BG_KEY);
+
+    if (hasTitleArt) {
       this.drawTitleBackground();
     } else {
       if (this.textures.exists(TITLE_BG_KEY)) {
@@ -28,7 +30,7 @@ export class MenuScene extends Phaser.Scene {
       }
       this.drawFallbackBackground();
     }
-    this.createStartZone();
+    this.createStartZone(hasTitleArt);
     this.createMuteButton();
 
     SoundManager.startMenuMusic();
@@ -68,20 +70,22 @@ export class MenuScene extends Phaser.Scene {
     });
   }
 
-  private createStartZone(): void {
-    const zone = this.add.zone(GAME_WIDTH / 2, 728, GAME_WIDTH, 120);
+  private createStartZone(hasTitleArt: boolean): void {
+    const zone = this.add.zone(GAME_WIDTH / 2, 728, GAME_WIDTH, 140);
     zone.setDepth(10);
     zone.setInteractive({ useHandCursor: true });
     zone.on('pointerdown', () => this.startGame());
 
-    this.add.text(GAME_WIDTH / 2, 728, STR.tapToStart, {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '18px',
-      fontStyle: 'bold',
-      color: '#5D3A1A',
-      backgroundColor: 'rgba(255,255,255,0.75)',
-      padding: { x: 14, y: 8 },
-    }).setOrigin(0.5).setDepth(11);
+    if (!hasTitleArt) {
+      this.add.text(GAME_WIDTH / 2, 728, STR.tapToStart, {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '18px',
+        fontStyle: 'bold',
+        color: '#5D3A1A',
+        backgroundColor: 'rgba(255,255,255,0.75)',
+        padding: { x: 14, y: 8 },
+      }).setOrigin(0.5).setDepth(11);
+    }
 
     this.input.keyboard?.once('keydown-SPACE', () => this.startGame());
     this.input.keyboard?.once('keydown-ENTER', () => this.startGame());
