@@ -1,8 +1,8 @@
 {
   "name": "Syndication Burger",
   "short_name": "SynBurger",
-  "description": "Stack the burger. Tap to start.",
-  "lang": "en",
+  "description": "バーガーを積もう。タップでスタート。",
+  "lang": "ja",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

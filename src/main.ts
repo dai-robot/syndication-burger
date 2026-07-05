@@ -16,19 +16,19 @@ function destroyGame(): void {
   }
 }
 
-function showFatalError(message: string, title = 'Game Error'): void {
+function showFatalError(message: string, title = 'エラー'): void {
   const el = document.getElementById('boot-msg');
   if (!el) return;
   el.classList.remove('hidden');
   el.innerHTML =
     `<div><p style="font-size:18px;font-weight:bold;color:#FF6B35;margin-bottom:12px;">${title}</p>` +
     `<p style="font-size:14px;line-height:1.6;">${message}</p>` +
-    `<p style="margin-top:16px;font-size:13px;color:#636e72;">Reload the page. Dev: run <code>npm run dev</code> and open<br>` +
-    `<code>http://127.0.0.1:5173/</code></p></div>`;
+    `<p style="margin-top:16px;font-size:13px;color:#636e72;">ページを再読み込みしてください。開発時は <code>npm run dev</code> で<br>` +
+    `<code>http://127.0.0.1:5173/</code> を開いてください。</p></div>`;
 }
 
 window.addEventListener('error', (event) => {
-  showFatalError(event.message || 'Unknown error');
+  showFatalError(event.message || '不明なエラー');
 });
 
 window.addEventListener('unhandledrejection', (event) => {
@@ -63,7 +63,7 @@ try {
   game = new Phaser.Game(config);
 } catch (error) {
   const msg = error instanceof Error ? error.message : String(error);
-  showFatalError(msg, 'Startup Error');
+  showFatalError(msg, '起動エラー');
 }
 
 if (import.meta.hot) {

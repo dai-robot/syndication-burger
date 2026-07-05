@@ -1,52 +1,58 @@
-/** Global English UI copy for Syndication Burger */
+/** 日本語 UI 文言 */
 export const STR = {
   title: 'Syndication Burger',
-  tagline: 'Stack the burger. Tap to start.',
-  loading: 'Loading…',
-  skip: 'Skip',
+  tagline: 'バーガーを積もう。タップでスタート',
+  loading: '読み込み中…',
+  skip: 'スキップ',
   tapToStart: 'TAP TO START',
-  tapToContinue: 'Tap to continue',
+  tapToContinue: 'タップして続ける',
 
-  stack: 'STACK',
-  score: 'SCORE',
-  stackMode: 'Bun every 4 drops · Fill the frame',
+  stack: 'スタック',
+  score: 'スコア',
+  stackMode: '4回に1回バンズ · 枠いっぱいでクリア',
 
-  guideDrag: 'Drag to move the tray',
-  guidePlay: 'Drag left/right · Misalign and it topples',
-  guideKeys: 'Drag or use ← → keys',
+  guideDrag: 'ドラッグでトレーを動かす',
+  guidePlay: '左右にドラッグ · ズレると崩れる',
+  guideKeys: 'ドラッグまたは ← → キー',
 
-  introTitle: 'Stack it steady!',
-  introDrag: 'Drag left and right to catch',
-  introRules: 'Bun every 4 drops · Fill the frame to finish',
+  introTitle: 'しっかり積もう！',
+  introDrag: '左右にドラッグして受け止める',
+  introRules: '4回に1回バンズ · 枠いっぱいでクリア',
 
-  complete: 'Complete!',
-  neatStack: 'Beautiful Allocation',
+  complete: '完成！',
+  neatStack: '美しいアロケーション',
 
-  retry: '▶  Play Again',
-  nextRound: (round: number) => `Harder Mode (R${round})`,
-  backToTitle: 'Back to Title',
-  starAlmost: 'Almost ★3!',
+  retry: '▶ もう一度',
+  nextRound: (round: number) => `難易度アップ (R${round})`,
+  backToTitle: 'タイトルへ',
+  starAlmost: 'あと少しで★3！',
 
-  breakdownLayers: (n: number) => `Layers        +${n}`,
-  breakdownBalance: (n: number) => `Balance       +${n}`,
-  breakdownLook: (n: number) => `Presentation  +${n}`,
-  breakdownHeight: (n: number) => `Height bonus  +${n}`,
-  breakdownPenalty: (n: number) => `Misses        ${n}`,
+  breakdownLayers: (n: number) => `積み上げ      +${n}`,
+  breakdownBalance: (n: number) => `バランス      +${n}`,
+  breakdownLook: (n: number) => `見た目        +${n}`,
+  breakdownHeight: (n: number) => `高さボーナス  +${n}`,
+  breakdownPenalty: (n: number) => `ミス          ${n}`,
 
   statusLine: (layers: number, drops: number, speedPct: number) =>
-    `${layers} layers · #${drops} · SPD ${Math.max(speedPct, 0)}%`,
+    `${layers}層 · #${drops} · 速度 ${Math.max(speedPct, 0)}%`,
 
-  maxScore: (max: number) => `/ ${max} pts`,
+  maxScore: (max: number) => `/ ${max} 点`,
+
+  starLabels: ['', 'いい感じ！', 'すばらしい！', '完璧！'] as const,
 } as const;
 
 export function getComboDisplay(label: 'Nice' | 'Great' | 'Perfect'): string {
-  return label;
+  switch (label) {
+    case 'Nice': return 'ナイス！';
+    case 'Great': return 'グレート！';
+    case 'Perfect': return 'パーフェクト！';
+  }
 }
 
 export function getResultMessage(stars: number, missCount: number): string {
-  if (stars >= 3) return 'Flawless! Chef-level skills!';
-  if (stars >= 2) return 'Looks delicious — almost perfect!';
-  if (stars >= 1) return 'Nice stack! Go for a higher score.';
-  if (missCount >= 2) return 'Too many drops — steady your hands.';
-  return 'Keep practicing — you’ve got this!';
+  if (stars >= 3) return '完璧！プロ級の技！';
+  if (stars >= 2) return 'おいしそう！あと一歩！';
+  if (stars >= 1) return 'いい感じ！もっと高得点を目指そう';
+  if (missCount >= 2) return '落としすぎ…手を安定させよう';
+  return '練習あるのみ！';
 }

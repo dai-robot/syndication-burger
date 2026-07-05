@@ -332,7 +332,7 @@ export class GameScene extends Phaser.Scene {
   private showDropLabel(type: IngredientType): void {
     this.dropLabel?.destroy();
     const def = INGREDIENT_DEFS[type];
-    this.dropLabel = this.add.text(GAME_WIDTH / 2, 118, def.label, {
+    this.dropLabel = this.add.text(GAME_WIDTH / 2, 118, def.labelJa, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
       fontStyle: 'bold',

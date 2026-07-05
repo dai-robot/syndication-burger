@@ -10,8 +10,6 @@ interface ResultSceneData extends GameResultData {
   stackTypes: IngredientType[];
 }
 
-const STAR_LABELS = ['', 'Good!', 'Great!', 'Perfect!'];
-
 export class ResultScene extends Phaser.Scene {
   private data_!: ResultSceneData;
 
@@ -119,7 +117,7 @@ export class ResultScene extends Phaser.Scene {
 
   private showStars(): void {
     const starY = 198;
-    const starLabel = STAR_LABELS[this.data_.stars] ?? '';
+    const starLabel = STR.starLabels[this.data_.stars] ?? '';
 
     for (let i = 0; i < 3; i++) {
       const filled = i < this.data_.stars;

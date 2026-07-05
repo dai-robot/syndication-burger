@@ -1,22 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#FFF8E8" />
-    <meta name="description" content="Syndication Burger — stack ingredients, balance the burger, and chase a perfect score. Tap to start." />
+    <meta name="description" content="Syndication Burger — 具材を積んで最高のバーガーを作ろう。タップでスタート。" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="SynBurger" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Syndication Burger" />
-    <meta property="og:description" content="Stack the burger. Tap to start." />
+    <meta property="og:description" content="バーガーを積もう。タップでスタート。" />
     <meta property="og:image" content="%BASE_URL%top.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Syndication Burger" />
-    <meta name="twitter:description" content="Stack the burger. Tap to start." />
+    <meta name="twitter:description" content="バーガーを積もう。タップでスタート。" />
     <link rel="manifest" href="%BASE_URL%manifest.json" />
     <title>Syndication Burger</title>
     <style>
@@ -45,17 +45,17 @@
     <div id="boot-msg">
       <div>
         <p style="font-size: 20px; font-weight: bold; margin-bottom: 12px;">Syndication Burger</p>
-        <p>Loading…</p>
+        <p>読み込み中…</p>
       </div>
     </div>
     <div id="app"></div>
     <script>
       if (location.protocol === 'file:') {
         document.getElementById('boot-msg').innerHTML =
-          '<div><p style="font-size:18px;font-weight:bold;margin-bottom:12px;">Use the dev server</p>' +
-          '<p>Do not open index.html directly. Run</p>' +
+          '<div><p style="font-size:18px;font-weight:bold;margin-bottom:12px;">開発サーバーを使ってください</p>' +
+          '<p>index.html を直接開かないでください。以下を実行</p>' +
           '<p style="margin:12px 0;"><code>npm install</code><br><code>npm run dev</code></p>' +
-          '<p>then open<br><code>http://127.0.0.1:5173/</code></p></div>';
+          '<p>その後<br><code>http://127.0.0.1:5173/</code> を開く</p></div>';
       }
     </script>
     <script type="module" src="/src/main.ts"></script>

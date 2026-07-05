@@ -27,7 +27,7 @@ export type IngredientType =
 export type ComboLabel = 'Nice' | 'Great' | 'Perfect';
 
 export const GAME_TITLE = 'Syndication Burger';
-export const GAME_TAGLINE = 'Stack the burger. Tap to start.';
+export const GAME_TAGLINE = 'バーガーを積もう。タップでスタート。';
 
 export interface IngredientDef {
   type: IngredientType;
