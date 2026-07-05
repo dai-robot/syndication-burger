@@ -1,0 +1,17 @@
+{
+  "name": "Syndication Burger",
+  "short_name": "SynBurger",
+  "description": "Stack the burger. Tap to start.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8F0",
+  "theme_color": "#FFF8F0",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
