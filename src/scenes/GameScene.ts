@@ -340,7 +340,17 @@ export class GameScene extends Phaser.Scene {
       stroke: '#FFFFFF',
       strokeThickness: 3,
     }).setOrigin(0.5).setDepth(150).setScrollFactor(0);
-    this.tweens.add({ targets: this.dropLabel, alpha: 0, y: 108, duration: 900, delay: 500 });
+    this.tweens.add({
+      targets: this.dropLabel,
+      alpha: 0,
+      y: 108,
+      duration: 900,
+      delay: 500,
+      onComplete: () => {
+        this.dropLabel?.destroy();
+        this.dropLabel = null;
+      },
+    });
   }
 
   private getStackTopY(): number {

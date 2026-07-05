@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH, COLORS } from '../game/GameConfig';
 import { STR } from '../i18n/strings';
-import { isSkipOpeningEnabled, setSkipOpening } from '../utils/GameSettings';
 import { SoundManager } from '../audio/SoundManager';
 
 const TITLE_BG_KEY = 'titleBg';
@@ -31,7 +30,6 @@ export class MenuScene extends Phaser.Scene {
     }
     this.createStartZone();
     this.createMuteButton();
-    this.createOpeningToggle();
 
     SoundManager.startMenuMusic();
     this.cameras.main.fadeIn(400, 0, 0, 0);
@@ -125,23 +123,5 @@ export class MenuScene extends Phaser.Scene {
       g.strokeCircle(0, 0, 5);
     }
     container.add(g);
-  }
-
-  private createOpeningToggle(): void {
-    const skip = isSkipOpeningEnabled();
-    const label = this.add.text(GAME_WIDTH / 2, 812, skip ? '✓ Skip opening next time' : 'Skip opening next time', {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '12px',
-      color: '#8b7355',
-      backgroundColor: 'rgba(255,255,255,0.55)',
-      padding: { x: 10, y: 5 },
-    }).setOrigin(0.5).setDepth(12).setInteractive({ useHandCursor: true });
-
-    label.on('pointerdown', () => {
-      const next = !isSkipOpeningEnabled();
-      setSkipOpening(next);
-      label.setText(next ? '✓ Skip opening next time' : 'Skip opening next time');
-      SoundManager.playTap();
-    });
   }
 }

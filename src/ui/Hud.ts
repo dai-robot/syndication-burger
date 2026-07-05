@@ -124,7 +124,7 @@ export class Hud {
       fontSize: '20px',
       fontStyle: 'bold',
       color: '#4ECDC4',
-    }).setOrigin(0.5, 0).setDepth(this.hudDepth);
+    }).setOrigin(0.5, 0).setDepth(this.hudDepth).setVisible(false);
 
     this.remainingText = this.scene.add.text(GAME_WIDTH - 28, 146, '', {
       fontFamily: 'Arial, sans-serif',
@@ -289,6 +289,7 @@ export class Hud {
   }
 
   showCombo(label: ComboLabel): void {
+    this.comboText.setVisible(true);
     this.comboText.setText(getComboDisplay(label));
     this.comboText.setColor(`#${COMBO_COLORS[label].toString(16).padStart(6, '0')}`);
     this.comboText.setScale(0.4);
@@ -304,6 +305,7 @@ export class Hud {
       onComplete: () => {
         this.comboText.setY(136);
         this.comboText.setText('');
+        this.comboText.setVisible(false);
       },
     });
   }
