@@ -73,3 +73,19 @@ canvas {
 .opening-skip:active {
   transform: scale(0.96);
 }
+
+.opening-fallback {
+  text-align: center;
+  padding: 24px;
+}
+
+.opening-fallback-title {
+  font: 700 32px/1.15 Arial, sans-serif;
+  color: #ff6b35;
+  margin-bottom: 12px;
+}
+
+.opening-fallback-copy {
+  font: 16px/1.5 Arial, sans-serif;
+  color: #636e72;
+}

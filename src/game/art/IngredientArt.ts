@@ -38,7 +38,10 @@ export function getPartTextureKey(type: IngredientType): string {
 
 export function ensureIngredientTextures(scene: Phaser.Scene): void {
   for (const type of Object.keys(INGREDIENT_DEFS) as IngredientType[]) {
-    bakePart(scene, type);
+    const key = getPartTextureKey(type);
+    if (!scene.textures.exists(key)) {
+      bakePart(scene, type);
+    }
   }
 }
 
@@ -59,9 +62,7 @@ function bakePart(scene: Phaser.Scene, type: IngredientType): void {
   paintPart(ctx, type, w, h);
 
   const key = getPartTextureKey(type);
-  if (scene.textures.exists(key)) {
-    scene.textures.remove(key);
-  }
+  if (scene.textures.exists(key)) return;
   scene.textures.addCanvas(key, canvas);
 }
 

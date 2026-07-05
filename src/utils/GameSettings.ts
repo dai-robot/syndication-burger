@@ -1,4 +1,44 @@
-const SEEN_KEY = 'syndication_burger_seen_opening';
+const SETTINGS_KEY = 'syndication_burger_settings';
+
+export interface GameSettings {
+  /** User opted out of the opening GIF on launch */
+  skipOpening: boolean;
+}
+
+const DEFAULT_SETTINGS: GameSettings = {
+  skipOpening: false,
+};
+
+export function loadSettings(): GameSettings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<GameSettings>;
+      return { ...DEFAULT_SETTINGS, ...parsed };
+    }
+  } catch {
+    /* ignore */
+  }
+
+  // Migrate legacy "seen once" flag → still show opening until user opts out
+  try {
+    if (localStorage.getItem('syndication_burger_seen_opening') === '1') {
+      return { ...DEFAULT_SETTINGS };
+    }
+  } catch {
+    /* ignore */
+  }
+
+  return { ...DEFAULT_SETTINGS };
+}
+
+export function saveSettings(settings: GameSettings): void {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch {
+    /* ignore */
+  }
+}
 
 export function shouldShowOpening(): boolean {
   try {
@@ -7,29 +47,13 @@ export function shouldShowOpening(): boolean {
   } catch {
     /* ignore */
   }
-  return !hasSeenOpening();
+  return !loadSettings().skipOpening;
 }
 
-export function hasSeenOpening(): boolean {
-  try {
-    return localStorage.getItem(SEEN_KEY) === '1';
-  } catch {
-    return false;
-  }
+export function setSkipOpening(skip: boolean): void {
+  saveSettings({ ...loadSettings(), skipOpening: skip });
 }
 
-export function markOpeningSeen(): void {
-  try {
-    localStorage.setItem(SEEN_KEY, '1');
-  } catch {
-    /* ignore */
-  }
-}
-
-export function resetOpeningSeen(): void {
-  try {
-    localStorage.removeItem(SEEN_KEY);
-  } catch {
-    /* ignore */
-  }
+export function isSkipOpeningEnabled(): boolean {
+  return loadSettings().skipOpening;
 }
