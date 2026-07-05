@@ -10,7 +10,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.image(TITLE_BG_KEY, '/top.png?v=2');
+    this.load.image(TITLE_BG_KEY, `${import.meta.env.BASE_URL}top.png?v=2`);
   }
 
   create(): void {

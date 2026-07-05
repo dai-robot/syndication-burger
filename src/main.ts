@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import './style.css';
 import { GAME_HEIGHT, GAME_WIDTH } from './game/GameConfig';
 import { BootScene } from './scenes/BootScene';
+import { OpeningScene } from './scenes/OpeningScene';
 import { MenuScene } from './scenes/MenuScene';
 import { GameScene } from './scenes/GameScene';
 import { ResultScene } from './scenes/ResultScene';
@@ -37,7 +38,7 @@ try {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
-    scene: [BootScene, MenuScene, GameScene, ResultScene],
+    scene: [BootScene, OpeningScene, MenuScene, GameScene, ResultScene],
     input: {
       activePointers: 2,
     },

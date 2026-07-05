@@ -204,14 +204,18 @@ export class GameScene extends Phaser.Scene {
   private createTray(): void {
     this.trayContainer = this.add.container(this.trayX, TRAY_Y).setDepth(10);
     const shadow = this.add.graphics();
-    shadow.fillStyle(0x5d3a1a, 0.15);
-    shadow.fillEllipse(0, 10, TRAY_WIDTH + 14, TRAY_HEIGHT + 4);
+    shadow.fillStyle(0x5d3a1a, 0.18);
+    shadow.fillEllipse(0, 12, TRAY_WIDTH + 18, TRAY_HEIGHT + 6);
     this.trayContainer.add(shadow);
     const tray = this.add.graphics();
-    tray.fillStyle(0x6d4c41, 1);
+    tray.fillStyle(0x5d4037, 1);
     tray.fillRoundedRect(-TRAY_WIDTH / 2, -TRAY_HEIGHT / 2, TRAY_WIDTH, TRAY_HEIGHT, 10);
-    tray.lineStyle(2, 0x5d3a1a, 0.35);
+    tray.fillStyle(0x8d6e63, 1);
+    tray.fillRoundedRect(-TRAY_WIDTH / 2 + 4, -TRAY_HEIGHT / 2 + 2, TRAY_WIDTH - 8, TRAY_HEIGHT * 0.45, 6);
+    tray.lineStyle(2, 0x3e2723, 0.45);
     tray.strokeRoundedRect(-TRAY_WIDTH / 2, -TRAY_HEIGHT / 2, TRAY_WIDTH, TRAY_HEIGHT, 10);
+    tray.lineStyle(1, 0xffd966, 0.25);
+    tray.strokeRoundedRect(-TRAY_WIDTH / 2 + 2, -TRAY_HEIGHT / 2 + 2, TRAY_WIDTH - 4, TRAY_HEIGHT - 4, 8);
     tray.fillStyle(0x8d6e63, 1);
     tray.fillRoundedRect(-TRAY_WIDTH / 2 + 3, -TRAY_HEIGHT / 2, TRAY_WIDTH - 6, TRAY_HEIGHT * 0.55, 8);
     this.trayContainer.add(tray);

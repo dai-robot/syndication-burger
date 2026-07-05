@@ -24,3 +24,52 @@ body {
 canvas {
   display: block;
 }
+
+.opening-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff8e8;
+  touch-action: manipulation;
+}
+
+.opening-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff8e8;
+  touch-action: manipulation;
+}
+
+.opening-gif {
+  display: block;
+  width: min(100vw, 390px);
+  height: min(100vh, 844px);
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.opening-skip {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  padding: 6px 12px;
+  border: 1px solid rgba(93, 58, 26, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #5d3a1a;
+  font: 600 12px/1 Arial, sans-serif;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.opening-skip:active {
+  transform: scale(0.96);
+}
