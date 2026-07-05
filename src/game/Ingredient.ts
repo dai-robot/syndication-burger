@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { ComboLabel, IngredientType } from './GameConfig';
 import { COMBO_COLORS, INGREDIENT_DEFS } from './GameConfig';
-import { getComboDisplay } from '../i18n/strings';
+import { getComboDisplay, STR } from '../i18n/strings';
 import { SoundManager } from '../audio/SoundManager';
 import { getPartTextureKey } from './art/IngredientArt';
 import { getMiniStackStep } from './StackLayout';
@@ -286,6 +286,56 @@ export function playFinishSquish(
         y: burgerGroup.y,
         duration: 280,
         ease: 'Back.easeOut',
+      });
+    },
+  });
+}
+
+export function showNeatStackPopup(
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+): void {
+  const color = 0xe8a838;
+  const hex = '#E8A838';
+
+  const ring = scene.add.circle(x, y - 50, 8, color, 0.3).setDepth(48);
+  scene.tweens.add({
+    targets: ring,
+    scaleX: 7,
+    scaleY: 3.5,
+    alpha: 0,
+    duration: 450,
+    ease: 'Cubic.easeOut',
+    onComplete: () => ring.destroy(),
+  });
+
+  const text = scene.add.text(x, y - 40, STR.neatStack, {
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '18px',
+    fontStyle: 'bold',
+    color: hex,
+    stroke: '#FFFFFF',
+    strokeThickness: 4,
+    align: 'center',
+    wordWrap: { width: 220 },
+  }).setOrigin(0.5).setScale(0.2).setAlpha(0).setDepth(50);
+
+  scene.tweens.add({
+    targets: text,
+    scale: 1,
+    alpha: 1,
+    y: y - 78,
+    duration: 300,
+    ease: 'Back.easeOut',
+    onComplete: () => {
+      scene.tweens.add({
+        targets: text,
+        alpha: 0,
+        y: text.y - 20,
+        duration: 500,
+        delay: 350,
+        onComplete: () => text.destroy(),
       });
     },
   });

@@ -48,10 +48,13 @@ try {
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: GAME_WIDTH,
+      height: GAME_HEIGHT,
     },
     scene: [BootScene, OpeningScene, MenuScene, GameScene, ResultScene],
     input: {
-      activePointers: 2,
+      activePointers: 3,
+      touch: { capture: true },
     },
     render: {
       antialias: true,

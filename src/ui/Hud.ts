@@ -135,16 +135,17 @@ export class Hud {
   }
 
   private createMuteButton(): void {
-    this.muteBtn = this.scene.add.container(GAME_WIDTH - 32, 32).setDepth(this.hudDepth);
+    const tapSize = 44;
+    this.muteBtn = this.scene.add.container(GAME_WIDTH - 36, 40).setDepth(this.hudDepth);
     const bg = this.scene.add.graphics();
     bg.fillStyle(COLORS.uiCard, 1);
     bg.lineStyle(1, 0x000000, 0.06);
-    bg.fillCircle(0, 0, 16);
-    bg.strokeCircle(0, 0, 16);
+    bg.fillCircle(0, 0, tapSize / 2);
+    bg.strokeCircle(0, 0, tapSize / 2);
     this.muteBtn.add(bg);
 
     this.drawMuteIcon(this.muteBtn, SoundManager.isMuted());
-    this.muteBtn.setSize(32, 32);
+    this.muteBtn.setSize(tapSize, tapSize);
     this.muteBtn.setInteractive({ useHandCursor: true });
     this.muteBtn.on('pointerdown', () => {
       const muted = SoundManager.toggleMute();
@@ -152,10 +153,11 @@ export class Hud {
       const bg2 = this.scene.add.graphics();
       bg2.fillStyle(COLORS.uiCard, 1);
       bg2.lineStyle(1, 0x000000, 0.06);
-      bg2.fillCircle(0, 0, 16);
-      bg2.strokeCircle(0, 0, 16);
+      bg2.fillCircle(0, 0, tapSize / 2);
+      bg2.strokeCircle(0, 0, tapSize / 2);
       this.muteBtn.add(bg2);
       this.drawMuteIcon(this.muteBtn, muted);
+      this.muteBtn.setSize(tapSize, tapSize);
       this.muteBtn.setInteractive({ useHandCursor: true });
       SoundManager.playTap();
     });
@@ -181,9 +183,9 @@ export class Hud {
 
   private createGuide(): void {
     this.guideBg = this.scene.add.graphics().setDepth(this.hudDepth);
-    this.guideText = this.scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 36, STR.guideKeys, {
+    this.guideText = this.scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 40, STR.guidePlay, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
+      fontSize: '14px',
       fontStyle: 'bold',
       color: '#636e72',
     }).setOrigin(0.5).setDepth(this.hudDepth);
@@ -191,10 +193,10 @@ export class Hud {
   }
 
   private refreshGuideBg(): void {
-    const w = this.guideText.width + 32;
+    const w = Math.min(this.guideText.width + 36, GAME_WIDTH - 24);
     this.guideBg.clear();
-    this.guideBg.fillStyle(COLORS.uiCard, 0.85);
-    this.guideBg.fillRoundedRect(GAME_WIDTH / 2 - w / 2, GAME_HEIGHT - 52, w, 32, 16);
+    this.guideBg.fillStyle(COLORS.uiCard, 0.9);
+    this.guideBg.fillRoundedRect(GAME_WIDTH / 2 - w / 2, GAME_HEIGHT - 58, w, 36, 18);
   }
 
   private createKetchupBar(): void {
