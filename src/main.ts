@@ -12,14 +12,14 @@ function showFatalError(message: string): void {
   if (!el) return;
   el.classList.remove('hidden');
   el.innerHTML =
-    `<div><p style="font-size:18px;font-weight:bold;color:#FF6B35;margin-bottom:12px;">起動エラー</p>` +
+    `<div><p style="font-size:18px;font-weight:bold;color:#FF6B35;margin-bottom:12px;">Startup Error</p>` +
     `<p style="font-size:14px;line-height:1.6;">${message}</p>` +
-    `<p style="margin-top:16px;font-size:13px;color:#636e72;">ターミナルで <code>npm run dev</code> を実行し、<br>` +
-    `<code>http://localhost:5173/</code> を開いてください。</p></div>`;
+    `<p style="margin-top:16px;font-size:13px;color:#636e72;">Run <code>npm run dev</code> and open<br>` +
+    `<code>http://127.0.0.1:5173/</code></p></div>`;
 }
 
 window.addEventListener('error', (event) => {
-  showFatalError(event.message || '不明なエラー');
+  showFatalError(event.message || 'Unknown error');
 });
 
 window.addEventListener('unhandledrejection', (event) => {

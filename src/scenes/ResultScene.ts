@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { GameResultData, IngredientType } from '../game/GameConfig';
-import { COLORS, GAME_HEIGHT, GAME_WIDTH, NEAT_STACK_MESSAGE, getResultMessage } from '../game/GameConfig';
+import { COLORS, GAME_HEIGHT, GAME_WIDTH } from '../game/GameConfig';
+import { getResultMessage, STR } from '../i18n/strings';
 import { drawMiniBurger } from '../game/Ingredient';
 import { SoundManager } from '../audio/SoundManager';
 
@@ -52,7 +53,7 @@ export class ResultScene extends Phaser.Scene {
   }
 
   private showTitle(): void {
-    const title = this.data_.neatStack ? NEAT_STACK_MESSAGE : '完成！';
+    const title = this.data_.neatStack ? STR.neatStack : STR.complete;
     const titleText = this.add.text(GAME_WIDTH / 2, 52, title, {
       fontFamily: 'Arial, sans-serif',
       fontSize: this.data_.neatStack ? '28px' : '38px',
@@ -170,7 +171,7 @@ export class ResultScene extends Phaser.Scene {
 
     if (this.data_.stars === 2) {
       this.time.delayedCall(2000, () => {
-        const hint = this.add.text(GAME_WIDTH / 2, starY + 80, 'あと少しで ★3！', {
+        const hint = this.add.text(GAME_WIDTH / 2, starY + 80, STR.starAlmost, {
           fontFamily: 'Arial, sans-serif',
           fontSize: '14px',
           fontStyle: 'bold',
@@ -206,7 +207,7 @@ export class ResultScene extends Phaser.Scene {
     panel.lineStyle(2, COLORS.accent, 0.15);
     panel.strokeRoundedRect(GAME_WIDTH / 2 - 108, 398, 216, 76, 16);
 
-    this.add.text(GAME_WIDTH / 2, 410, 'SCORE', {
+    this.add.text(GAME_WIDTH / 2, 410, STR.score, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '10px',
       fontStyle: 'bold',
@@ -238,7 +239,7 @@ export class ResultScene extends Phaser.Scene {
       });
     }
 
-    this.add.text(GAME_WIDTH / 2, 466, `/ ${this.data_.maxScore} pts`, {
+    this.add.text(GAME_WIDTH / 2, 466, STR.maxScore(this.data_.maxScore), {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
       color: '#636e72',
@@ -248,13 +249,12 @@ export class ResultScene extends Phaser.Scene {
   private showBreakdown(): void {
     const b = this.data_.breakdown;
     const lines = [
-      `層数ボーナス  +${b.layers}`,
-      `バランス      +${b.balance}`,
-      `見栄え        +${b.appearance}`,
-      `高さボーナス  +${b.height}`,
-      `ソース        ${b.sauce >= 0 ? '+' : ''}${b.sauce}`,
+      STR.breakdownLayers(b.layers),
+      STR.breakdownBalance(b.balance),
+      STR.breakdownLook(b.appearance),
+      STR.breakdownHeight(b.height),
     ];
-    if (b.penalty < 0) lines.push(`ミス   ${b.penalty}`);
+    if (b.penalty < 0) lines.push(STR.breakdownPenalty(b.penalty));
 
     const card = this.add.container(GAME_WIDTH / 2, 558).setAlpha(0);
     const bg = this.add.graphics();
@@ -276,7 +276,7 @@ export class ResultScene extends Phaser.Scene {
   }
 
   private createButtons(): void {
-    this.createButton(GAME_WIDTH / 2, 676, '▶  もう一回！', COLORS.accent, true, () => {
+    this.createButton(GAME_WIDTH / 2, 676, STR.retry, COLORS.accent, true, () => {
       SoundManager.playTap();
       this.cameras.main.fadeOut(200, 0, 0, 0);
       this.time.delayedCall(200, () => {
@@ -284,12 +284,15 @@ export class ResultScene extends Phaser.Scene {
       });
     });
 
-    this.createButton(GAME_WIDTH / 2, 738, `次のラウンド (R${this.data_.round + 1})`, COLORS.sub, false, () => {
+    this.createButton(GAME_WIDTH / 2, 738, STR.nextRound(this.data_.round + 1), COLORS.sub, false, () => {
       SoundManager.playTap();
-      this.scene.start('GameScene', { round: this.data_.round + 1 });
+      this.cameras.main.fadeOut(200, 0, 0, 0);
+      this.time.delayedCall(200, () => {
+        this.scene.start('GameScene', { round: this.data_.round + 1 });
+      });
     });
 
-    const titleBtn = this.add.text(GAME_WIDTH / 2, 788, 'タイトルへ', {
+    const titleBtn = this.add.text(GAME_WIDTH / 2, 788, STR.backToTitle, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
       color: '#636e72',
@@ -297,7 +300,10 @@ export class ResultScene extends Phaser.Scene {
 
     titleBtn.on('pointerdown', () => {
       SoundManager.playTap();
-      this.scene.start('MenuScene');
+      this.cameras.main.fadeOut(200, 0, 0, 0);
+      this.time.delayedCall(200, () => {
+        this.scene.start('MenuScene');
+      });
     });
 
     this.tweens.add({ targets: titleBtn, alpha: 1, duration: 300, delay: 1600 });

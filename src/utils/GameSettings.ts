@@ -1,5 +1,15 @@
 const SEEN_KEY = 'syndication_burger_seen_opening';
 
+export function shouldShowOpening(): boolean {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('opening') === '1') return true;
+  } catch {
+    /* ignore */
+  }
+  return !hasSeenOpening();
+}
+
 export function hasSeenOpening(): boolean {
   try {
     return localStorage.getItem(SEEN_KEY) === '1';

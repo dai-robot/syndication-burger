@@ -4,10 +4,10 @@ import {
   COMBO_COLORS,
   GAME_HEIGHT,
   GAME_WIDTH,
-  getComboDisplay,
   getSpeedPercent,
   type ComboLabel,
 } from '../game/GameConfig';
+import { getComboDisplay, STR } from '../i18n/strings';
 import { SoundManager } from '../audio/SoundManager';
 
 export class Hud {
@@ -86,7 +86,7 @@ export class Hud {
     accent.fillRect(-160, -38, 320, 5);
     this.orderCard.add(accent);
 
-    const title = this.scene.add.text(-140, -24, '積み上げ', {
+    const title = this.scene.add.text(-140, -24, STR.stack, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '11px',
       fontStyle: 'bold',
@@ -104,7 +104,7 @@ export class Hud {
     panel.lineStyle(1, 0x000000, 0.04);
     panel.strokeRoundedRect(12, 124, GAME_WIDTH - 24, 44, 12);
 
-    this.scoreLabel = this.scene.add.text(28, 132, 'SCORE', {
+    this.scoreLabel = this.scene.add.text(28, 132, STR.score, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '10px',
       fontStyle: 'bold',
@@ -181,7 +181,7 @@ export class Hud {
 
   private createGuide(): void {
     this.guideBg = this.scene.add.graphics().setDepth(this.hudDepth);
-    this.guideText = this.scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 36, '指でドラッグしてトレイを動かす', {
+    this.guideText = this.scene.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 36, STR.guideKeys, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
       fontStyle: 'bold',
@@ -216,7 +216,7 @@ export class Hud {
     bg.fillStyle(COLORS.sub, 1);
     bg.fillRoundedRect(-55, -16, 110, 32, 16);
     this.finishBtn.add(bg);
-    this.finishBtn.add(this.scene.add.text(0, 0, '完成！', {
+    this.finishBtn.add(this.scene.add.text(0, 0, STR.complete, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
       fontStyle: 'bold',
@@ -242,7 +242,7 @@ export class Hud {
     for (const c of this.orderChips) c.destroy();
     this.orderChips = [];
 
-    this.modeText = this.scene.add.text(0, 8, '4回に1バンズ · 完成！', {
+    this.modeText = this.scene.add.text(0, 8, STR.stackMode, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
       fontStyle: 'bold',
@@ -250,7 +250,7 @@ export class Hud {
     }).setOrigin(0.5);
     this.orderCard.add(this.modeText);
     this.orderChips.push(this.modeText);
-    this.setGuide('画面を左右ドラッグ · ズレると崩れる');
+    this.setGuide(STR.guidePlay);
     this.setFinishVisible(false);
   }
 
@@ -285,7 +285,7 @@ export class Hud {
 
   private refreshStackStatus(): void {
     const speedPct = getSpeedPercent(this.speedLevel);
-    this.remainingText.setText(`${this.layerCount}層 · #${this.dropCount} · SPD${Math.max(speedPct, 0)}%`);
+    this.remainingText.setText(STR.statusLine(this.layerCount, this.dropCount, speedPct));
   }
 
   showCombo(label: ComboLabel): void {
@@ -321,7 +321,7 @@ export class Hud {
       this.ketchupLabel.setText('長押しでケチャップ！');
       this.setGuide('画面を長押ししてソースをかける');
     } else {
-      this.setGuide('指でドラッグしてトレイを動かす');
+      this.setGuide(STR.guideDrag);
     }
   }
 

@@ -10,7 +10,6 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
   INGREDIENT_DEFS,
-  NEAT_STACK_MESSAGE,
   PLAY_AREA_TOP,
   PLAY_CENTER_X,
   STACK_LIMIT_Y,
@@ -22,6 +21,7 @@ import {
   type ComboLabel,
   type IngredientType,
 } from '../game/GameConfig';
+import { STR } from '../i18n/strings';
 import { getNextDropType } from '../game/DropSchedule';
 import {
   attachFallingShadow,
@@ -94,7 +94,7 @@ export class GameScene extends Phaser.Scene {
     this.stack = [];
     this.falling = null;
     this.fallingType = null;
-    this.fallSpeed = BASE_FALL_SPEED;
+    this.fallSpeed = getRoundConfig(this.round).fallSpeed;
     this.fallWobble = getRoundConfig(this.round).wobbleAmount;
     this.isDragging = false;
     this.dragPointerId = -1;
@@ -122,37 +122,49 @@ export class GameScene extends Phaser.Scene {
   }
 
   private showIntroOverlay(): void {
-    const overlay = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2).setDepth(300);
-    overlay.add(this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.4));
-    overlay.add(this.add.text(0, -30, 'バランスよく\n積み上げろ！', {
+    const blocker = this.add.rectangle(
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.45,
+    ).setDepth(300).setInteractive();
+
+    const panel = this.add.container(GAME_WIDTH / 2, GAME_HEIGHT / 2).setDepth(301);
+    panel.add(this.add.text(0, -40, STR.introTitle, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '28px',
       fontStyle: 'bold',
       color: '#FFFFFF',
       align: 'center',
-      lineSpacing: 8,
     }).setOrigin(0.5));
-    overlay.add(this.add.text(0, 20, '👆 画面を左右にドラッグ', {
+    panel.add(this.add.text(0, 0, STR.introDrag, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
       color: '#FFE0CC',
     }).setOrigin(0.5));
-    overlay.add(this.add.text(0, 48, '4回に1バンズ · 完成！', {
+    panel.add(this.add.text(0, 28, STR.introRules, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
       color: '#FFE0CC',
     }).setOrigin(0.5));
 
-    this.tweens.add({
-      targets: overlay,
-      alpha: 0,
-      delay: 1400,
-      duration: 450,
-      onComplete: () => {
-        overlay.destroy();
-        this.startDropSequence();
-      },
-    });
+    const continueBtn = this.add.text(0, 72, STR.tapToContinue, {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '16px',
+      fontStyle: 'bold',
+      color: '#FFD966',
+      backgroundColor: 'rgba(255,255,255,0.12)',
+      padding: { x: 12, y: 6 },
+    }).setOrigin(0.5).setDepth(302).setInteractive({ useHandCursor: true });
+
+    const dismiss = () => {
+      blocker.destroy();
+      panel.destroy();
+      continueBtn.destroy();
+      this.startDropSequence();
+    };
+
+    continueBtn.on('pointerdown', dismiss);
+    blocker.on('pointerdown', dismiss);
+    this.input.keyboard?.once('keydown-SPACE', dismiss);
+    this.input.keyboard?.once('keydown-ENTER', dismiss);
   }
 
   private drawBackground(): void {
@@ -265,12 +277,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateFallDifficulty(): void {
+    const roundBase = getRoundConfig(this.round).fallSpeed;
     const t = this.totalDrops - 1;
     const dropBoost = t * FALL_SPEED_INCREMENT + t * t * 0.7;
     const layerBoost = this.stack.length * LAYER_SPEED_INCREMENT;
     this.fallSpeed = clamp(
-      BASE_FALL_SPEED + dropBoost + layerBoost,
-      BASE_FALL_SPEED,
+      roundBase + dropBoost + layerBoost,
+      roundBase,
       MAX_FALL_SPEED,
     );
     this.fallWobble = clamp(
@@ -318,7 +331,7 @@ export class GameScene extends Phaser.Scene {
   private showDropLabel(type: IngredientType): void {
     this.dropLabel?.destroy();
     const def = INGREDIENT_DEFS[type];
-    this.dropLabel = this.add.text(GAME_WIDTH / 2, 118, def.labelJa, {
+    this.dropLabel = this.add.text(GAME_WIDTH / 2, 118, def.label, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '20px',
       fontStyle: 'bold',
@@ -507,7 +520,7 @@ export class GameScene extends Phaser.Scene {
     this.hud.updateScore(resultData.totalScore);
     SoundManager.playSquish();
 
-    const msg = resultData.neatStack ? NEAT_STACK_MESSAGE : '完成！';
+    const msg = resultData.neatStack ? STR.neatStack : STR.complete;
     const completeText = this.add.text(GAME_WIDTH / 2, 280, msg, {
       fontFamily: 'Arial, sans-serif',
       fontSize: resultData.neatStack ? '30px' : '36px',

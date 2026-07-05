@@ -1,6 +1,9 @@
 /**
  * Syndication Burger オープニング GIF 生成
  * npm run generate:opening
+ *
+ * GIF は半透明非対応のため、全ピクセルを不透明で描画し、
+ * フレームごとにパレットを生成して色崩れを防ぐ。
  */
 import { writeFileSync } from 'node:fs';
 import gifenc from 'gifenc';
@@ -19,6 +22,7 @@ const C = {
   bunDark: [192, 120, 40],
   bunMid: [232, 168, 56],
   bunLight: [255, 217, 102],
+  bunCream: [255, 243, 196],
   sesame: [255, 253, 231],
   patty: [107, 58, 24],
   pattyHi: [154, 101, 48],
@@ -27,14 +31,17 @@ const C = {
   lettuce: [124, 179, 66],
   lettuceHi: [174, 213, 129],
   tomato: [229, 57, 53],
+  tomatoInner: [255, 138, 101],
   accent: [255, 107, 53],
   white: [255, 255, 255],
-  steam: [255, 255, 255],
+  steam: [255, 252, 240],
+  card: [255, 250, 235],
 };
 
 class Frame {
   constructor() {
     this.data = new Uint8ClampedArray(W * H * 4);
+    this.clear(...C.bg);
   }
 
   clear(r, g, b) {
@@ -46,37 +53,46 @@ class Frame {
     }
   }
 
-  setPixel(x, y, r, g, b, a = 255) {
+  getPixel(x, y) {
+    x = Math.round(x);
+    y = Math.round(y);
+    if (x < 0 || y < 0 || x >= W || y >= H) return [...C.bg, 255];
+    const i = (y * W + x) * 4;
+    return [this.data[i], this.data[i + 1], this.data[i + 2], 255];
+  }
+
+  setPixel(x, y, r, g, b) {
     x = Math.round(x);
     y = Math.round(y);
     if (x < 0 || y < 0 || x >= W || y >= H) return;
     const i = (y * W + x) * 4;
-    if (a >= 250) {
-      this.data[i] = r;
-      this.data[i + 1] = g;
-      this.data[i + 2] = b;
-      this.data[i + 3] = 255;
-      return;
-    }
-    const srcA = a / 255;
-    const dstA = this.data[i + 3] / 255;
-    const outA = srcA + dstA * (1 - srcA);
-    if (outA <= 0) return;
-    this.data[i] = Math.round((r * srcA + this.data[i] * dstA * (1 - srcA)) / outA);
-    this.data[i + 1] = Math.round((g * srcA + this.data[i + 1] * dstA * (1 - srcA)) / outA);
-    this.data[i + 2] = Math.round((b * srcA + this.data[i + 2] * dstA * (1 - srcA)) / outA);
-    this.data[i + 3] = Math.round(outA * 255);
+    this.data[i] = r;
+    this.data[i + 1] = g;
+    this.data[i + 2] = b;
+    this.data[i + 3] = 255;
   }
 
-  fillRect(x, y, w, h, color, alpha = 255) {
+  blendPixel(x, y, r, g, b, t) {
+    const [dr, dg, db] = this.getPixel(x, y);
+    this.setPixel(
+      x,
+      y,
+      Math.round(r * t + dr * (1 - t)),
+      Math.round(g * t + dg * (1 - t)),
+      Math.round(b * t + db * (1 - t)),
+    );
+  }
+
+  fillRect(x, y, w, h, color, opacity = 1) {
     for (let py = Math.floor(y); py < y + h; py++) {
       for (let px = Math.floor(x); px < x + w; px++) {
-        this.setPixel(px, py, color[0], color[1], color[2], alpha);
+        if (opacity >= 0.99) this.setPixel(px, py, color[0], color[1], color[2]);
+        else this.blendPixel(px, py, color[0], color[1], color[2], opacity);
       }
     }
   }
 
-  fillEllipse(cx, cy, rx, ry, color, alpha = 255) {
+  fillEllipse(cx, cy, rx, ry, color, opacity = 1) {
     const x0 = Math.floor(cx - rx);
     const x1 = Math.ceil(cx + rx);
     const y0 = Math.floor(cy - ry);
@@ -86,29 +102,30 @@ class Frame {
         const nx = (x - cx) / rx;
         const ny = (y - cy) / ry;
         if (nx * nx + ny * ny <= 1) {
-          this.setPixel(x, y, color[0], color[1], color[2], alpha);
+          if (opacity >= 0.99) this.setPixel(x, y, color[0], color[1], color[2]);
+          else this.blendPixel(x, y, color[0], color[1], color[2], opacity);
         }
       }
     }
   }
 
-  strokeEllipse(cx, cy, rx, ry, color, line = 1, alpha = 180) {
-    for (let t = 0; t < Math.PI * 2; t += 0.02) {
+  strokeEllipse(cx, cy, rx, ry, color, line = 1, opacity = 0.55) {
+    for (let t = 0; t < Math.PI * 2; t += 0.025) {
       for (let d = 0; d < line; d++) {
-        const x = cx + Math.cos(t) * (rx - d * 0.4);
-        const y = cy + Math.sin(t) * (ry - d * 0.4);
-        this.setPixel(x, y, color[0], color[1], color[2], alpha);
+        const x = cx + Math.cos(t) * (rx - d * 0.35);
+        const y = cy + Math.sin(t) * (ry - d * 0.35);
+        this.blendPixel(x, y, color[0], color[1], color[2], opacity);
       }
     }
   }
 
-  roundRect(x, y, w, h, r, color, alpha = 255) {
-    this.fillRect(x + r, y, w - r * 2, h, color, alpha);
-    this.fillRect(x, y + r, w, h - r * 2, color, alpha);
-    this.fillEllipse(x + r, y + r, r, r, color, alpha);
-    this.fillEllipse(x + w - r, y + r, r, r, color, alpha);
-    this.fillEllipse(x + r, y + h - r, r, r, color, alpha);
-    this.fillEllipse(x + w - r, y + h - r, r, r, color, alpha);
+  roundRect(x, y, w, h, r, color, opacity = 1) {
+    this.fillRect(x + r, y, w - r * 2, h, color, opacity);
+    this.fillRect(x, y + r, w, h - r * 2, color, opacity);
+    this.fillEllipse(x + r, y + r, r, r, color, opacity);
+    this.fillEllipse(x + w - r, y + r, r, r, color, opacity);
+    this.fillEllipse(x + r, y + h - r, r, r, color, opacity);
+    this.fillEllipse(x + w - r, y + h - r, r, r, color, opacity);
   }
 }
 
@@ -137,42 +154,45 @@ function drawBackground(f, frame) {
   }
 
   const fade = clamp(frame / 10, 0, 1);
-  f.fillRect(0, 0, W, H, C.bg, Math.round((1 - fade) * 180));
+  if (fade < 1) {
+    f.fillRect(0, 0, W, H, C.bg, 1 - fade * 0.7);
+  }
 
-  f.roundRect(14, 52, W - 28, H - 110, 12, C.white, 40);
-  f.strokeEllipse(W / 2, H - 58, 62, 10, C.outline, 1, 50);
+  f.roundRect(14, 52, W - 28, H - 110, 12, C.card, 0.35);
+  f.strokeEllipse(W / 2, H - 58, 62, 10, C.outline, 1, 0.35);
 }
 
 function drawTitle(f, frame) {
   const t = clamp((frame - 4) / 12, 0, 1);
   const bounce = easeOutBack(t);
   const y = lerp(-30, 78, bounce);
-  const alpha = Math.round(255 * clamp(t * 1.2, 0, 1));
+  const opacity = clamp(t * 1.2, 0, 1);
 
-  f.roundRect(W / 2 - 78, y - 18, 156, 36, 8, C.accent, Math.round(alpha * 0.15));
-  drawBlockText(f, 'SYNDICATION', W / 2, y - 8, 0.55, alpha);
-  drawBlockText(f, 'BURGER', W / 2, y + 10, 0.7, alpha);
+  if (opacity > 0) {
+    f.roundRect(W / 2 - 78, y - 18, 156, 36, 8, C.accent, opacity * 0.18);
+    drawBlockText(f, 'SYNDICATION', W / 2, y - 8, 0.55, opacity);
+    drawBlockText(f, 'BURGER', W / 2, y + 10, 0.7, opacity);
+  }
 
   if (frame >= 34) {
     const pulse = 0.65 + Math.sin((frame - 34) * 0.45) * 0.35;
-    const tapAlpha = Math.round(220 * pulse);
-    drawBlockText(f, 'TAP TO START', W / 2, H - 42, 0.42, tapAlpha);
+    drawBlockText(f, 'TAP TO START', W / 2, H - 42, 0.42, pulse);
   }
 }
 
-function drawBlockText(f, text, cx, cy, scale, alpha) {
-  const charW = Math.round(6 * scale);
-  const charH = Math.round(8 * scale);
-  const gap = Math.round(2 * scale);
+function drawBlockText(f, text, cx, cy, scale, opacity) {
+  const charW = Math.max(2, Math.round(6 * scale));
+  const charH = Math.max(3, Math.round(8 * scale));
+  const gap = Math.max(1, Math.round(2 * scale));
   const totalW = text.length * charW + (text.length - 1) * gap;
   let x = cx - totalW / 2;
   for (const ch of text) {
-    drawChar(f, ch, x, cy - charH / 2, charW, charH, alpha);
+    drawChar(f, ch, x, cy - charH / 2, charW, charH, opacity);
     x += charW + gap;
   }
 }
 
-function drawChar(f, ch, x, y, w, h, alpha) {
+function drawChar(f, ch, x, y, w, h, opacity) {
   const glyphs = {
     S: ['1111', '1   ', '111 ', '   1', '1111'],
     Y: ['1   1', ' 1 1 ', '  1  ', '  1  ', '  1  '],
@@ -195,29 +215,30 @@ function drawChar(f, ch, x, y, w, h, alpha) {
   for (let row = 0; row < rows.length; row++) {
     for (let col = 0; col < rows[row].length; col++) {
       if (rows[row][col] !== '1') continue;
-      f.fillRect(x + col * px, y + row * px, px, px, C.outline, alpha);
+      f.fillRect(x + col * px, y + row * px, px, px, C.outline, opacity);
     }
   }
 }
 
 function drawBottomBun(f, cx, baseY, drop) {
   const y = baseY + (1 - drop) * -80;
-  f.fillEllipse(cx, y + 8, 46, 12, C.bunDark);
-  f.fillEllipse(cx, y + 4, 44, 10, C.bunMid);
-  f.fillEllipse(cx, y, 42, 9, C.bunLight);
-  f.strokeEllipse(cx, y + 3, 43, 9, C.outline, 1, 120);
+  f.fillEllipse(cx, y + 12, 46, 18, C.bunDark);
+  f.fillEllipse(cx, y + 6, 44, 15, C.bunMid);
+  f.fillEllipse(cx, y + 1, 42, 12, C.bunLight);
+  f.fillEllipse(cx, y - 8, 34, 7, C.bunCream);
+  f.strokeEllipse(cx, y + 4, 43, 13, C.outline, 1, 0.45);
 }
 
 function drawPatty(f, cx, baseY, drop) {
   const y = baseY + (1 - drop) * -90;
-  f.fillEllipse(cx, y + 4, 40, 9, C.patty);
-  f.fillEllipse(cx - 6, y + 1, 10, 4, C.pattyHi, 160);
-  f.strokeEllipse(cx, y + 3, 38, 8, C.outline, 1, 100);
+  f.fillEllipse(cx, y + 5, 40, 10, C.patty);
+  f.fillEllipse(cx - 6, y + 1, 10, 4, C.pattyHi, 0.7);
+  f.strokeEllipse(cx, y + 3, 38, 8, C.outline, 1, 0.4);
 }
 
 function drawCheese(f, cx, baseY, drop) {
   const y = baseY + (1 - drop) * -85;
-  f.roundRect(cx - 38, y - 4, 76, 8, 2, C.cheeseDrip, 220);
+  f.roundRect(cx - 38, y - 4, 76, 9, 2, C.cheeseDrip);
   f.roundRect(cx - 36, y - 5, 72, 7, 2, C.cheese);
   for (const d of [-24, 0, 22]) {
     f.fillRect(cx + d - 2, y + 2, 4, 5, C.cheeseDrip);
@@ -237,18 +258,19 @@ function drawLettuce(f, cx, baseY, drop) {
 function drawTomato(f, cx, baseY, drop) {
   const y = baseY + (1 - drop) * -86;
   f.fillEllipse(cx, y, 28, 7, C.tomato);
-  f.fillEllipse(cx, y + 1, 18, 4, [255, 138, 101], 180);
+  f.fillEllipse(cx, y + 1, 18, 4, C.tomatoInner, 0.75);
 }
 
 function drawTopBun(f, cx, baseY, drop) {
   const y = baseY + (1 - drop) * -95;
-  f.fillEllipse(cx, y + 10, 44, 10, C.bunDark);
-  f.fillEllipse(cx, y + 2, 46, 14, C.bunMid);
-  f.fillEllipse(cx, y - 2, 42, 12, C.bunLight);
-  for (const [sx, sy] of [[-12, -4], [0, -8], [12, -5], [-6, -2], [8, -3]]) {
+  f.fillEllipse(cx, y + 14, 44, 12, C.bunDark);
+  f.fillEllipse(cx, y + 4, 46, 18, C.bunMid);
+  f.fillEllipse(cx, y - 4, 42, 16, C.bunLight);
+  f.fillEllipse(cx, y - 14, 34, 12, C.bunLight);
+  for (const [sx, sy] of [[-12, -8], [0, -14], [12, -10], [-6, -4], [8, -6]]) {
     f.fillEllipse(cx + sx, y + sy, 2, 1.5, C.sesame);
   }
-  f.strokeEllipse(cx, y + 2, 44, 12, C.outline, 1, 120);
+  f.strokeEllipse(cx, y + 2, 44, 14, C.outline, 1, 0.45);
 }
 
 function layerDrop(frame, start) {
@@ -269,17 +291,16 @@ function drawBurger(f, frame) {
 
   for (const layer of layers) {
     if (frame < layer.start) continue;
-    const drop = layerDrop(frame, layer.start);
-    layer.draw(f, cx, baseY, drop);
+    layer.draw(f, cx, baseY, layerDrop(frame, layer.start));
   }
 
   if (frame >= 38) {
     const steamT = frame - 38;
     for (let i = 0; i < 4; i++) {
       const sx = cx + (i - 1.5) * 16;
-      const sy = baseY - 70 - steamT * 3 - i * 4;
-      const a = Math.max(0, 180 - steamT * 18 - i * 20);
-      f.fillEllipse(sx, sy, 4 + i, 3, C.steam, a);
+      const sy = baseY - 72 - steamT * 3 - i * 4;
+      const opacity = clamp(1 - steamT * 0.12 - i * 0.15, 0, 1);
+      if (opacity > 0) f.fillEllipse(sx, sy, 4 + i, 3, C.steam, opacity * 0.85);
     }
   }
 
@@ -289,7 +310,7 @@ function drawBurger(f, frame) {
       const dist = 52 + Math.sin(frame * 0.2 + i) * 4;
       const px = cx + Math.cos(a) * dist;
       const py = baseY - 40 + Math.sin(a) * dist * 0.35;
-      f.fillEllipse(px, py, 2, 2, C.accent, 160);
+      f.fillEllipse(px, py, 2, 2, C.accent, 0.9);
     }
   }
 }
@@ -302,17 +323,38 @@ function renderFrame(index) {
   return f.data;
 }
 
-const frames = Array.from({ length: FRAME_COUNT }, (_, i) => renderFrame(i));
-const combined = new Uint8ClampedArray(frames.reduce((sum, f) => sum + f.length, 0));
-let offset = 0;
-for (const rgba of frames) {
-  combined.set(rgba, offset);
-  offset += rgba.length;
+function validateFrame(rgba, frameIndex) {
+  let greenish = 0;
+  let blackish = 0;
+  let creamish = 0;
+  for (let i = 0; i < rgba.length; i += 4) {
+    const r = rgba[i];
+    const g = rgba[i + 1];
+    const b = rgba[i + 2];
+    if (r < 20 && g < 20 && b < 20) blackish++;
+    if (g > 180 && r < 80 && b < 80) greenish++;
+    if (r > 230 && g > 220 && b > 170) creamish++;
+  }
+  const total = rgba.length / 4;
+  if (greenish / total > 0.08) {
+    throw new Error(`Frame ${frameIndex}: too much green (${(greenish / total * 100).toFixed(1)}%)`);
+  }
+  if (blackish / total > 0.15) {
+    throw new Error(`Frame ${frameIndex}: too much black (${(blackish / total * 100).toFixed(1)}%)`);
+  }
+  if (creamish / total < 0.25) {
+    throw new Error(`Frame ${frameIndex}: background too weak (${(creamish / total * 100).toFixed(1)}%)`);
+  }
 }
-const palette = quantize(combined, 256);
+
+const frames = Array.from({ length: FRAME_COUNT }, (_, i) => renderFrame(i));
+for (let i = 0; i < frames.length; i++) {
+  validateFrame(frames[i], i);
+}
 
 const gif = GIFEncoder({ loop: 1 });
 for (const rgba of frames) {
+  const palette = quantize(rgba, 256);
   const index = applyPalette(rgba, palette);
   gif.writeFrame(index, W, H, { palette, delay: FRAME_DELAY });
 }
@@ -322,3 +364,4 @@ const out = new Uint8Array(gif.bytes());
 writeFileSync(new URL('../public/syndication_burger_opening.gif', import.meta.url), out);
 
 console.log(`Wrote public/syndication_burger_opening.gif (${(out.length / 1024).toFixed(1)} KB, ${FRAME_COUNT} frames)`);
+console.log('Validation passed for all frames.');

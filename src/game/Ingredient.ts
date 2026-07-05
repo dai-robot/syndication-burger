@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { ComboLabel, IngredientType } from './GameConfig';
-import { COMBO_COLORS, getComboDisplay, INGREDIENT_DEFS } from './GameConfig';
+import { COMBO_COLORS, INGREDIENT_DEFS } from './GameConfig';
+import { getComboDisplay } from '../i18n/strings';
 import { SoundManager } from '../audio/SoundManager';
 import { ensureIngredientTextures, getPartTextureKey } from './art/IngredientArt';
 

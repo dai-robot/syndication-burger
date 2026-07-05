@@ -24,6 +24,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run generate:opening
+      - run: npm run verify:opening
       - run: npm run build
         env:
           GITHUB_ACTIONS: true

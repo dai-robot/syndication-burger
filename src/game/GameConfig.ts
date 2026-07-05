@@ -28,12 +28,6 @@ export type ComboLabel = 'Nice' | 'Great' | 'Perfect';
 
 export const GAME_TITLE = 'Syndication Burger';
 export const GAME_TAGLINE = 'Stack the burger. Tap to start.';
-export const NEAT_STACK_MESSAGE = '美しいアロケーション';
-
-export function getComboDisplay(label: ComboLabel): string {
-  if (label === 'Perfect') return NEAT_STACK_MESSAGE;
-  return label;
-}
 
 export interface IngredientDef {
   type: IngredientType;
@@ -270,12 +264,4 @@ export function getRoundConfig(round: number): RoundConfig {
     ingredientCount: count,
     ketchupStrictness: strictness,
   };
-}
-
-export function getResultMessage(stars: number, missCount: number): string {
-  if (stars >= 3) return '完璧！シェフの才能！';
-  if (stars >= 2) return 'おいしそう！あと一息で満点！';
-  if (stars >= 1) return 'いい感じ！もう一回チャレンジ！';
-  if (missCount >= 2) return '落としすぎ…落ち着いて受けよう';
-  return '練習あるのみ！';
 }
