@@ -7,23 +7,26 @@ import { SoundManager } from '../audio/SoundManager';
 const TITLE_BG_KEY = 'titleBg';
 
 export class MenuScene extends Phaser.Scene {
+  private titleBgReady = false;
+
   constructor() {
     super({ key: 'MenuScene' });
   }
 
   preload(): void {
-    this.load.image(TITLE_BG_KEY, `${import.meta.env.BASE_URL}top.png?v=2`);
-    this.load.on('loaderror', () => {
-      if (!this.textures.exists(TITLE_BG_KEY)) {
-        this.textures.remove(TITLE_BG_KEY);
-      }
+    this.load.on(`filecomplete-image-${TITLE_BG_KEY}`, () => {
+      this.titleBgReady = true;
     });
+    this.load.image(TITLE_BG_KEY, `${import.meta.env.BASE_URL}top.png?v=2`);
   }
 
   create(): void {
-    if (this.textures.exists(TITLE_BG_KEY)) {
+    if (this.titleBgReady && this.textures.exists(TITLE_BG_KEY)) {
       this.drawTitleBackground();
     } else {
+      if (this.textures.exists(TITLE_BG_KEY)) {
+        this.textures.remove(TITLE_BG_KEY);
+      }
       this.drawFallbackBackground();
     }
     this.createStartZone();

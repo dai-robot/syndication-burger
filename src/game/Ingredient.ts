@@ -3,7 +3,7 @@ import type { ComboLabel, IngredientType } from './GameConfig';
 import { COMBO_COLORS, INGREDIENT_DEFS } from './GameConfig';
 import { getComboDisplay } from '../i18n/strings';
 import { SoundManager } from '../audio/SoundManager';
-import { ensureIngredientTextures, getPartTextureKey } from './art/IngredientArt';
+import { getPartTextureKey } from './art/IngredientArt';
 import { getMiniStackStep } from './StackLayout';
 
 export interface StackItem {
@@ -32,8 +32,6 @@ export function createIngredientContainer(
   x: number,
   y: number,
 ): Phaser.GameObjects.Container {
-  ensureIngredientTextures(scene);
-
   const def = INGREDIENT_DEFS[type];
   const container = scene.add.container(x, y);
   const sprite = scene.add.image(0, 0, getPartTextureKey(type));
@@ -405,8 +403,6 @@ export function drawMiniBurger(
   types: IngredientType[],
   scale = 0.35,
 ): Phaser.GameObjects.Container {
-  ensureIngredientTextures(scene);
-
   const group = scene.add.container(x, y);
   group.setScale(scale);
 

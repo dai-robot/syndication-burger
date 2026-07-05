@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { SoundManager } from '../audio/SoundManager';
-import { ensureIngredientTextures, resetIngredientTextures } from '../game/art/IngredientArt';
+import { ensureIngredientTextures } from '../game/art/IngredientArt';
 import { shouldShowOpening } from '../utils/GameSettings';
 
 export class BootScene extends Phaser.Scene {
@@ -11,8 +11,9 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     SoundManager.init();
     document.getElementById('boot-msg')?.classList.add('hidden');
-    resetIngredientTextures();
     ensureIngredientTextures(this);
-    this.scene.start(shouldShowOpening() ? 'OpeningScene' : 'MenuScene');
+    this.time.delayedCall(0, () => {
+      this.scene.start(shouldShowOpening() ? 'OpeningScene' : 'MenuScene');
+    });
   }
 }

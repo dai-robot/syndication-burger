@@ -7,14 +7,23 @@ import { MenuScene } from './scenes/MenuScene';
 import { GameScene } from './scenes/GameScene';
 import { ResultScene } from './scenes/ResultScene';
 
-function showFatalError(message: string): void {
+let game: Phaser.Game | null = null;
+
+function destroyGame(): void {
+  if (game) {
+    game.destroy(true);
+    game = null;
+  }
+}
+
+function showFatalError(message: string, title = 'Game Error'): void {
   const el = document.getElementById('boot-msg');
   if (!el) return;
   el.classList.remove('hidden');
   el.innerHTML =
-    `<div><p style="font-size:18px;font-weight:bold;color:#FF6B35;margin-bottom:12px;">Startup Error</p>` +
+    `<div><p style="font-size:18px;font-weight:bold;color:#FF6B35;margin-bottom:12px;">${title}</p>` +
     `<p style="font-size:14px;line-height:1.6;">${message}</p>` +
-    `<p style="margin-top:16px;font-size:13px;color:#636e72;">Run <code>npm run dev</code> and open<br>` +
+    `<p style="margin-top:16px;font-size:13px;color:#636e72;">Reload the page. Dev: run <code>npm run dev</code> and open<br>` +
     `<code>http://127.0.0.1:5173/</code></p></div>`;
 }
 
@@ -28,6 +37,8 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 try {
+  destroyGame();
+
   const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: GAME_WIDTH,
@@ -49,9 +60,14 @@ try {
     },
   };
 
-  const game = new Phaser.Game(config);
-  void game;
+  game = new Phaser.Game(config);
 } catch (error) {
   const msg = error instanceof Error ? error.message : String(error);
-  showFatalError(msg);
+  showFatalError(msg, 'Startup Error');
+}
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    destroyGame();
+  });
 }

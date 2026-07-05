@@ -2,6 +2,19 @@ import type { IngredientType } from '../GameConfig';
 import { INGREDIENT_DEFS } from '../GameConfig';
 
 const PREFIX = 'part_';
+const bakedGames = new WeakSet<Phaser.Game>();
+
+interface RefreshableTexture {
+  refresh: () => void;
+}
+
+function refreshCanvasTexture(textures: Phaser.Textures.TextureManager, key: string): void {
+  if (!textures.exists(key)) return;
+  const tex = textures.get(key) as unknown as RefreshableTexture;
+  if (typeof tex.refresh === 'function') {
+    tex.refresh();
+  }
+}
 
 /** タイトル画面と同系統のダイナー調パレット */
 const C = {
@@ -37,19 +50,28 @@ export function getPartTextureKey(type: IngredientType): string {
 }
 
 export function ensureIngredientTextures(scene: Phaser.Scene): void {
+  const game = scene.game;
+  if (bakedGames.has(game)) return;
+
   for (const type of Object.keys(INGREDIENT_DEFS) as IngredientType[]) {
-    const key = getPartTextureKey(type);
-    if (!scene.textures.exists(key)) {
-      bakePart(scene, type);
-    }
+    bakePart(game, type);
   }
+
+  bakedGames.add(game);
 }
 
-function bakePart(scene: Phaser.Scene, type: IngredientType): void {
+function bakePart(game: Phaser.Game, type: IngredientType): void {
+  const textures = game.textures;
   const def = INGREDIENT_DEFS[type];
   const w = def.width;
   const h = def.height;
   const scale = 2;
+  const key = getPartTextureKey(type);
+
+  if (textures.exists(key)) {
+    refreshCanvasTexture(textures, key);
+    return;
+  }
 
   const canvas = document.createElement('canvas');
   canvas.width = w * scale;
@@ -61,9 +83,8 @@ function bakePart(scene: Phaser.Scene, type: IngredientType): void {
   ctx.translate(w / 2, h / 2);
   paintPart(ctx, type, w, h);
 
-  const key = getPartTextureKey(type);
-  if (scene.textures.exists(key)) return;
-  scene.textures.addCanvas(key, canvas);
+  textures.addCanvas(key, canvas);
+  refreshCanvasTexture(textures, key);
 }
 
 function paintPart(
@@ -377,7 +398,7 @@ function roundRect(
   ctx.closePath();
 }
 
-/** テスト・再生成用（ensureIngredientTextures が毎回焼き直す） */
+/** ランタイムではテクスチャを削除・再生成しない */
 export function resetIngredientTextures(): void {
   /* no-op */
 }
